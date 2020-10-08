@@ -1,0 +1,44 @@
+{
+    "name": "typicode/users",
+    "homepage": "https://www.example.com",
+    "description": "A custom wordPress plugin",
+    "license": "GPL-2.0-or-later",
+
+    "type": "wordpress-plugin",
+
+    "keywords": [
+        "WordPress", "plugins", "themes", "php"
+    ],
+
+    "authors": [
+        {
+            "name": "Himeshkumar Challa",
+            "email": "WontLetYouKnowMyEmail@abcdefghijklmnopqrstuvwxyz.me"
+        }
+    ],
+
+    "autoload": {
+        "psr-4": {
+            "Typicode\\": "src/"
+        }
+    },
+
+    "autoload-dev": {
+        "psr-4": {
+            "Typicode\\": "tests/src/"
+        }
+    },
+
+    "require": {
+        "php": ">=7.4"
+    },
+
+    "require-dev": {
+        "phing/phing": "3.0.0a3@dev",
+        "phpunit/phpunit": "~7.5.18",
+        "respect/validation" : "~2.0.17",
+        "inpsyde/php-coding-standards": "^0.13.4"
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
