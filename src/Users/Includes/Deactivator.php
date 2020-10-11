@@ -32,7 +32,9 @@ class Deactivator
      *
      * @since    1.0.0
      */
-    public static function deactivate()
-    {
+    public static function deactivate() {
+        remove_action('init', [ __NAMESPACE__.'Activator', 'typicodeusers_rewrite']);
+        remove_action('query_vars', [ __NAMESPACE__.'Activator', 'foo_set_query_var']);
+        remove_filter('template_include', [ __NAMESPACE__.'Activator', 'foo_include_template'], 1000, 1);
     }
 }

@@ -1,6 +1,8 @@
 <?php
 declare(strict_types=1);
 
+defined( 'ABSPATH' ) OR exit;
+
 use Typicode\Users\Includes\Activator as typicodeUsersPluginActivator;
 use Typicode\Users\Includes\Deactivator as typicodeUsersPluginDeactivator;
 use Typicode\Users\Includes\Users as typicodeUsersPluginTypicodeUsers;
@@ -64,8 +66,8 @@ function deactivateTypicodeUsers() {
 	typicodeUsersPluginDeactivator::deactivate();
 }
 
-register_activation_hook( __FILE__, 'activateTypicodeUsers' );
-register_deactivation_hook( __FILE__, 'deactivateTypicodeUsers' );
+// register_activation_hook( __FILE__, 'activateTypicodeUsers' );
+// register_deactivation_hook( __FILE__, 'deactivateTypicodeUsers' );
 
 /**
  * The core plugin class that is used to define internationalization,
@@ -88,4 +90,118 @@ function runTypicodeUsers() {
 	$plugin->run();
 
 }
-runTypicodeUsers();
+// runTypicodeUsers();
+
+
+
+
+
+function WCM_Setup_Demo_on_activation()
+{
+    if ( ! current_user_can( 'activate_plugins' ) )
+        return;
+    $plugin = isset( $_REQUEST['plugin'] ) ? $_REQUEST['plugin'] : '';
+    check_admin_referer( "activate-plugin_{$plugin}" );
+
+    # Uncomment the following line to see the function in action
+	// exit( var_dump( $_GET ) );
+
+	// add_action('init', 'typicodeusers_rewrite');
+    global $wp_rewrite;
+
+    //set up our query variable %fake_page% which equates to index.php?fake_page=
+    add_rewrite_tag( '%typicodeusers%', '([^&]+)');
+
+    //add rewrite rule that matches /blog/page/2, /blog/page/3, /blog/page/4, etc..
+    add_rewrite_rule('^typicodeusers/page/?([0-9])?','index.php?typicodeusers=typicodeusers&paged=$matches[1]','top');
+
+    //add rewrite rule that matches /blog
+    add_rewrite_rule('^typicodeusers/?','index.php?typicodeusers=typicodeusers','top');
+
+    //add endpoint, in this case 'blog' to satisfy our rewrite rule /blog, /blog/page/ etc..
+    add_rewrite_endpoint( 'typicodeusers', EP_PERMALINK | EP_PAGES );
+
+    //flush rules to get this to work properly
+    $wp_rewrite->flush_rules();
+
+	add_action('query_vars','foo_set_query_var');
+	add_filter('template_include', 'foo_include_template', 1000, 1);
+}
+
+function WCM_Setup_Demo_on_deactivation()
+{
+    if ( ! current_user_can( 'activate_plugins' ) )
+        return;
+    $plugin = isset( $_REQUEST['plugin'] ) ? $_REQUEST['plugin'] : '';
+	check_admin_referer( "deactivate-plugin_{$plugin}" );
+
+	remove_action('init', 'typicodeusers_rewrite');
+	remove_action('query_vars','foo_set_query_var');
+	remove_filter('template_include', 'foo_include_template', 1000, 1);
+
+	global $wp_rewrite;
+
+    //set up our query variable %fake_page% which equates to index.php?fake_page=
+	remove_rewrite_tag('%typicodeusers%');
+
+    //flush rules to get this to work properly
+	$wp_rewrite->flush_rules();
+
+    # Uncomment the following line to see the function in action
+    // exit( var_dump( $_GET ) );
+}
+
+function WCM_Setup_Demo_on_uninstall()
+{
+    if ( ! current_user_can( 'activate_plugins' ) )
+        return;
+    check_admin_referer( 'bulk-plugins' );
+
+    // Important: Check if the file is the one
+    // that was registered during the uninstall hook.
+    if ( __FILE__ != WP_UNINSTALL_PLUGIN )
+        return;
+
+    # Uncomment the following line to see the function in action
+    exit( var_dump( $_GET ) );
+}
+
+
+function typicodeusers_rewrite(){
+
+    global $wp_rewrite;
+
+    //set up our query variable %fake_page% which equates to index.php?fake_page=
+    add_rewrite_tag( '%typicodeusers%', '([^&]+)');
+
+    //add rewrite rule that matches /blog/page/2, /blog/page/3, /blog/page/4, etc..
+    add_rewrite_rule('^typicodeusers/page/?([0-9])?','index.php?typicodeusers=typicodeusers&paged=$matches[1]','top');
+
+    //add rewrite rule that matches /blog
+    add_rewrite_rule('^typicodeusers/?','index.php?typicodeusers=typicodeusers','top');
+
+    //add endpoint, in this case 'blog' to satisfy our rewrite rule /blog, /blog/page/ etc..
+    add_rewrite_endpoint( 'typicodeusers', EP_PERMALINK | EP_PAGES );
+
+    //flush rules to get this to work properly
+    $wp_rewrite->flush_rules();
+}
+
+function foo_set_query_var($vars) {
+    array_push($vars, 'typicodeusers');
+    return $vars;
+}
+
+function foo_include_template($template){
+    if(get_query_var('typicodeusers', 'typicodeusers')){
+        $new_template = WP_PLUGIN_DIR.'/typicode-users/src/Users/Frontend/test1.php';
+        if(file_exists($new_template))
+            $template = $new_template;
+    }
+    // return "yahooooooooooo tha dha dha thahhhoahohoh yahooo";
+    return $template;
+}
+
+register_activation_hook(   __FILE__, 'WCM_Setup_Demo_on_activation' );
+register_deactivation_hook( __FILE__, 'WCM_Setup_Demo_on_deactivation' );
+register_uninstall_hook(    __FILE__, 'WCM_Setup_Demo_on_uninstall' );
