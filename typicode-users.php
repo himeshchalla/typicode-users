@@ -90,7 +90,7 @@ function runTypicodeUsers() {
 	$plugin->run();
 
 }
-// runTypicodeUsers();
+runTypicodeUsers();
 
 
 
