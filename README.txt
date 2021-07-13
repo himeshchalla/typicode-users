@@ -1,5 +1,5 @@
 === REST poc ===
-Contributors: Himeshkumar Challa
+Contributors: ...
 Tags: rest poc,composer, phpunit, phpcs, di, php plugin.
 Requires at least: 0.0.0
 Tested up to: 0.0
@@ -11,4 +11,4 @@ Rest implementation poc along with request/response cache.
 
 == Description ==
 
-...WIP
+...WIP...
